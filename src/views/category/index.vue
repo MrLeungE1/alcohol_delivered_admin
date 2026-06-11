@@ -170,10 +170,10 @@ onMounted(refresh)
       </table>
     </div>
 
-    <div v-if="dialogOpen" class="dialog-mask" @click.self="dialogOpen = false">
-      <div class="dialog">
-        <div class="dialog-title">{{ dialogTitle }}</div>
-        <div class="dialog-body">
+    <div v-if="dialogOpen" class="app-dialog-mask" @click.self="dialogOpen = false">
+      <div class="app-dialog" style="--dialog-width: 520px">
+        <div class="app-dialog__header">{{ dialogTitle }}</div>
+        <div class="app-dialog__body app-dialog__body--form">
           <label class="field">
             <span class="label">分类名称</span>
             <input v-model.trim="form.cate_name" class="input" placeholder="例如：啤酒" />
@@ -190,7 +190,7 @@ onMounted(refresh)
             </select>
           </label>
         </div>
-        <div class="dialog-foot">
+        <div class="app-dialog__footer">
           <button class="btn secondary" type="button" @click="dialogOpen = false">取消</button>
           <button class="btn" type="button" :disabled="loading" @click="submit">保存</button>
         </div>
@@ -329,38 +329,6 @@ onMounted(refresh)
   color: var(--muted);
 }
 
-.dialog-mask {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.dialog {
-  width: min(520px, 100%);
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.18);
-}
-
-.dialog-title {
-  padding: 14px 16px;
-  font-weight: 600;
-  border-bottom: 1px solid var(--border);
-}
-
-.dialog-body {
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
 .field {
   display: flex;
   flex-direction: column;
@@ -372,11 +340,4 @@ onMounted(refresh)
   color: var(--muted);
 }
 
-.dialog-foot {
-  padding: 12px 16px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
 </style>

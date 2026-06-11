@@ -4,7 +4,7 @@ export interface CreateProductRequest {
   price: number
   market_price?: number | null
   thumb?: string | null
-  detail_img?: string | null
+  images?: ProductImageItem[] | null
   stock?: number
   is_hot?: number
   is_special?: number
@@ -19,7 +19,7 @@ export interface EditProductRequest {
   price?: number | null
   market_price?: number | null
   thumb?: string | null
-  detail_img?: string | null
+  images?: ProductImageItem[] | null
   stock?: number | null
   is_hot?: number | null
   is_special?: number | null
@@ -41,12 +41,26 @@ export interface ProductResponse {
   price: number
   market_price?: number | null
   thumb?: string | null
-  detail_img?: string | null
+  images?: ProductImageResponse[] | null
   stock: number
   is_hot: number
   is_special: number
   desc?: string | null
   status: number
+}
+
+export interface ProductImageItem {
+  image_url: string
+  image_type?: number
+  sort?: number
+}
+
+export interface ProductImageResponse {
+  id: number
+  image_url: string
+  image_type: number
+  sort: number
+  product_id: number
 }
 
 export interface CreateCategoryRequest {

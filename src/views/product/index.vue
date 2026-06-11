@@ -30,6 +30,7 @@
             <th style="width: 80px">ID</th>
             <th>商品名称</th>
             <th style="width: 160px">分类</th>
+            <th style="width: 120px">图片</th>
             <th style="width: 120px">售价</th>
             <th style="width: 120px">库存</th>
             <th style="width: 120px">状态</th>
@@ -41,6 +42,7 @@
             <td>{{ row.id }}</td>
             <td>{{ row.product_name }}</td>
             <td>{{ cateNameMap[row.cate_id] || row.cate_id }}</td>
+            <td>{{ getImageSummary(row) }}</td>
             <td>{{ row.price }}</td>
             <td>{{ row.stock }}</td>
             <td>
@@ -54,16 +56,16 @@
             </td>
           </tr>
           <tr v-if="list.length === 0">
-            <td colspan="7" class="empty">暂无数据</td>
+            <td colspan="8" class="empty">暂无数据</td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <div v-if="dialogOpen" class="dialog-mask" @click.self="dialogOpen = false">
-      <div class="dialog">
-        <div class="dialog-title">{{ dialogTitle }}</div>
-        <div class="dialog-body">
+    <div v-if="dialogOpen" class="app-dialog-mask" @click.self="dialogOpen = false">
+      <div class="app-dialog" style="--dialog-width: 760px">
+        <div class="app-dialog__header">{{ dialogTitle }}</div>
+        <div class="app-dialog__body app-dialog__body--form">
           <label class="field">
             <span class="label">分类</span>
             <select v-model.number="form.cate_id" class="input">
@@ -121,14 +123,34 @@
           </div>
           <label class="field">
             <span class="label">缩略图</span>
-            <input v-model.trim="form.thumb" class="input" placeholder="图片 URL（可选）" />
+            <ImageUploader v-model="thumbList" label="缩略图" :limit="1" @error="showUploadError" />
+          </label>
+          <label class="field">
+            <span class="label">轮播图</span>
+            <ImageUploader
+              v-model="form.banner_images"
+              label="轮播图"
+              :limit="6"
+              multiple
+              @error="showUploadError"
+            />
+          </label>
+          <label class="field">
+            <span class="label">详情图</span>
+            <ImageUploader
+              v-model="form.detail_images"
+              label="详情图"
+              :limit="12"
+              multiple
+              @error="showUploadError"
+            />
           </label>
           <label class="field">
             <span class="label">描述</span>
             <textarea v-model.trim="form.desc" class="textarea" placeholder="可选"></textarea>
           </label>
         </div>
-        <div class="dialog-foot">
+        <div class="app-dialog__footer">
           <button class="btn secondary" type="button" @click="dialogOpen = false">取消</button>
           <button class="btn" type="button" :disabled="loading" @click="submit">保存</button>
         </div>
@@ -140,10 +162,12 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { addProduct, deleteProduct, editProduct, searchProducts } from '@/api/product'
 import { listCategories } from '@/api/category'
+import ImageUploader from '@/components/ImageUploader.vue'
 import type {
   CategoryResponse,
   CreateProductRequest,
   EditProductRequest,
+  ProductImageItem,
   ProductResponse,
 } from '@/types/openapi'
 
@@ -175,10 +199,18 @@ const form = reactive({
   is_hot: 0,
   is_special: 0,
   thumb: '',
+  banner_images: [] as string[],
+  detail_images: [] as string[],
   desc: '',
 })
 
 const dialogTitle = computed(() => (editingId.value ? '编辑商品' : '新增商品'))
+const thumbList = computed<string[]>({
+  get: () => (form.thumb ? [form.thumb] : []),
+  set: (value) => {
+    form.thumb = value[0] ?? ''
+  },
+})
 
 async function loadCategories() {
   categories.value = await listCategories({})
@@ -211,9 +243,18 @@ function openCreate() {
   form.is_hot = 0
   form.is_special = 0
   form.thumb = ''
+  form.banner_images = []
+  form.detail_images = []
   form.desc = ''
   if (categories.value.length > 0) form.cate_id = categories.value[0].id
   dialogOpen.value = true
+}
+
+function pickProductImages(row: ProductResponse, imageType: number) {
+  return (row.images ?? [])
+    .filter((item) => item.image_type === imageType)
+    .sort((a, b) => a.sort - b.sort)
+    .map((item) => item.image_url)
 }
 
 function openEdit(row: ProductResponse) {
@@ -227,8 +268,32 @@ function openEdit(row: ProductResponse) {
   form.is_hot = row.is_hot
   form.is_special = row.is_special
   form.thumb = row.thumb ?? ''
+  form.banner_images = pickProductImages(row, 1)
+  form.detail_images = pickProductImages(row, 2)
   form.desc = row.desc ?? ''
   dialogOpen.value = true
+}
+
+function buildProductImages(urls: string[], imageType: number): ProductImageItem[] {
+  return urls
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .map((image_url, index) => ({
+      image_url,
+      image_type: imageType,
+      sort: index,
+    }))
+}
+
+function getImageSummary(row: ProductResponse) {
+  const images = row.images ?? []
+  const bannerCount = images.filter((item) => item.image_type === 1).length
+  const detailCount = images.filter((item) => item.image_type === 2).length
+  return `轮播 ${bannerCount} / 详情 ${detailCount}`
+}
+
+function showUploadError(message: string) {
+  alert(message)
 }
 
 async function submit() {
@@ -247,6 +312,11 @@ async function submit() {
 
   loading.value = true
   try {
+    const images = [
+      ...buildProductImages(form.banner_images, 1),
+      ...buildProductImages(form.detail_images, 2),
+    ]
+
     if (editingId.value) {
       const payload: EditProductRequest = {
         id: editingId.value,
@@ -255,6 +325,7 @@ async function submit() {
         price: Number(form.price),
         market_price: form.market_price ? Number(form.market_price) : null,
         thumb: form.thumb ? form.thumb : null,
+        images: images.length > 0 ? images : null,
         stock: Number(form.stock) || 0,
         status: Number(form.status) || 0,
         is_hot: Number(form.is_hot) || 0,
@@ -269,6 +340,7 @@ async function submit() {
         price: Number(form.price),
         market_price: form.market_price ? Number(form.market_price) : null,
         thumb: form.thumb ? form.thumb : null,
+        images: images.length > 0 ? images : null,
         stock: Number(form.stock) || 0,
         status: Number(form.status) || 0,
         is_hot: Number(form.is_hot) || 0,
@@ -442,38 +514,6 @@ onMounted(async () => {
   gap: 12px;
 }
 
-.dialog-mask {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.dialog {
-  width: min(720px, 100%);
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.18);
-}
-
-.dialog-title {
-  padding: 14px 16px;
-  font-weight: 600;
-  border-bottom: 1px solid var(--border);
-}
-
-.dialog-body {
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
 .field {
   display: flex;
   flex-direction: column;
@@ -483,14 +523,6 @@ onMounted(async () => {
 .label {
   font-size: 13px;
   color: var(--muted);
-}
-
-.dialog-foot {
-  padding: 12px 16px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
 }
 
 @media (max-width: 640px) {

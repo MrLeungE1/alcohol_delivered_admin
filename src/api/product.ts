@@ -23,5 +23,5 @@ export function deleteProduct(productId: number) {
 }
 
 export function getProductDetail(productId: number) {
-  return get<unknown>(`/admin/product/product/${productId}`)
+  return get<ProductResponse>(`/admin/product/product/${productId}`)
 }

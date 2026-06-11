@@ -1,10 +1,64 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "FastAPI",
+    "title": "酒水配送系统",
     "version": "0.1.0"
   },
   "paths": {
+    "/upload/upload": {
+      "post": {
+        "tags": [
+          "通用上传"
+        ],
+        "summary": "通用上传图片",
+        "operationId": "upload_common_file_upload_upload_post",
+        "parameters": [
+          {
+            "name": "module",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "模块名， product/activity/home",
+              "title": "Module"
+            },
+            "description": "模块名， product/activity/home"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_common_file_upload_upload_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin/product/add": {
       "post": {
         "tags": [
@@ -426,13 +480,13 @@
         }
       }
     },
-    "/sys_admin/create": {
+    "/admin/sys_admin/create": {
       "post": {
         "tags": [
           "系统管理"
         ],
         "summary": "新建用户",
-        "operationId": "create_sys_admin_sys_admin_create_post",
+        "operationId": "create_sys_admin_admin_sys_admin_create_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -467,13 +521,13 @@
         }
       }
     },
-    "/sys_admin/update": {
+    "/admin/sys_admin/update": {
       "post": {
         "tags": [
           "系统管理"
         ],
         "summary": "更新用户",
-        "operationId": "update_sys_admin_sys_admin_update_post",
+        "operationId": "update_sys_admin_admin_sys_admin_update_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -491,6 +545,47 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SysAdminCreate"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/sys_admin/login": {
+      "post": {
+        "tags": [
+          "系统管理"
+        ],
+        "summary": "用户登录",
+        "operationId": "login_sys_admin_admin_sys_admin_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SysAdminLogin"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SysAdminLoginResponse"
                 }
               }
             }
@@ -529,6 +624,21 @@
   },
   "components": {
     "schemas": {
+      "Body_upload_common_file_upload_upload_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "description": "上传的图片文件"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_common_file_upload_upload_post"
+      },
       "CategoryListRequest": {
         "properties": {
           "cate_name": {
@@ -664,17 +774,20 @@
             "title": "Thumb",
             "description": "商品缩略图"
           },
-          "detail_img": {
+          "images": {
             "anyOf": [
               {
-                "type": "string"
+                "items": {
+                  "$ref": "#/components/schemas/ProductImageItem"
+                },
+                "type": "array"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Detail Img",
-            "description": "详情图片(JSON)"
+            "title": "Images",
+            "description": "商品图片列表（轮播图、详情图）"
           },
           "stock": {
             "type": "integer",
@@ -789,16 +902,19 @@
             ],
             "title": "Thumb"
           },
-          "detail_img": {
+          "images": {
             "anyOf": [
               {
-                "type": "string"
+                "items": {
+                  "$ref": "#/components/schemas/ProductImageItem"
+                },
+                "type": "array"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Detail Img"
+            "title": "Images"
           },
           "stock": {
             "anyOf": [
@@ -875,6 +991,68 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "ProductImageItem": {
+        "properties": {
+          "image_url": {
+            "type": "string",
+            "title": "Image Url",
+            "description": "图片URL"
+          },
+          "image_type": {
+            "type": "integer",
+            "maximum": 2,
+            "minimum": 1,
+            "title": "Image Type",
+            "description": "1=轮播图,2=详情图",
+            "default": 1
+          },
+          "sort": {
+            "type": "integer",
+            "minimum": 0,
+            "title": "Sort",
+            "description": "排序",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "image_url"
+        ],
+        "title": "ProductImageItem"
+      },
+      "ProductImageResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "image_url": {
+            "type": "string",
+            "title": "Image Url"
+          },
+          "image_type": {
+            "type": "integer",
+            "title": "Image Type"
+          },
+          "sort": {
+            "type": "integer",
+            "title": "Sort"
+          },
+          "product_id": {
+            "type": "integer",
+            "title": "Product Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "image_url",
+          "image_type",
+          "sort",
+          "product_id"
+        ],
+        "title": "ProductImageResponse"
+      },
       "ProductResponse": {
         "properties": {
           "id": {
@@ -915,16 +1093,20 @@
             ],
             "title": "Thumb"
           },
-          "detail_img": {
+          "images": {
             "anyOf": [
               {
-                "type": "string"
+                "items": {
+                  "$ref": "#/components/schemas/ProductImageResponse"
+                },
+                "type": "array"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Detail Img"
+            "title": "Images",
+            "default": []
           },
           "stock": {
             "type": "integer",
@@ -1077,6 +1259,37 @@
           "password"
         ],
         "title": "SysAdminCreate"
+      },
+      "SysAdminLogin": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "SysAdminLogin"
+      },
+      "SysAdminLoginResponse": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "title": "Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "title": "SysAdminLoginResponse"
       },
       "SysAdminUpdate": {
         "properties": {
