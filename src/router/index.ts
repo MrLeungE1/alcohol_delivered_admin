@@ -32,6 +32,12 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/views/category/index.vue'),
         meta: { title: '分类管理' },
       },
+      {
+        path: 'activity',
+        name: 'Activity',
+        component: () => import('@/views/activity/index.vue'),
+        meta: { title: '活动管理' },
+      },
     ],
   },
   {

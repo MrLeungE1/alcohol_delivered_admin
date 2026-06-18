@@ -10,7 +10,7 @@
 <style scoped>
 .layout-main {
   flex: 1;
-  padding: 24px;
+  padding: 28px;
   background: var(--bg);
   overflow-y: auto;
   min-height: calc(100vh - 60px);

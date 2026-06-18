@@ -82,7 +82,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProductResponse"
+                  "$ref": "#/components/schemas/app__schemas__admin__product__ProductResponse"
                 }
               }
             }
@@ -97,7 +97,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
       }
     },
     "/admin/product/search": {
@@ -124,7 +129,7 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "$ref": "#/components/schemas/ProductResponse"
+                    "$ref": "#/components/schemas/app__schemas__admin__product__ProductResponse"
                   },
                   "type": "array",
                   "title": "Response Search Products Admin Product Search Post"
@@ -142,7 +147,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
       }
     },
     "/admin/product/edit": {
@@ -168,7 +178,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProductResponse"
+                  "$ref": "#/components/schemas/app__schemas__admin__product__ProductResponse"
                 }
               }
             }
@@ -183,7 +193,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
       }
     },
     "/admin/product/{product_id}": {
@@ -193,6 +208,11 @@
         ],
         "summary": "删除商品",
         "operationId": "delete_product_admin_product__product_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "product_id",
@@ -235,6 +255,11 @@
         ],
         "summary": "查询商品详情",
         "operationId": "get_product_admin_product_product__product_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "product_id",
@@ -308,7 +333,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
       }
     },
     "/category/edit": {
@@ -349,7 +379,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
       }
     },
     "/category/list": {
@@ -394,7 +429,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
       }
     },
     "/category/{request_id}": {
@@ -404,6 +444,11 @@
         ],
         "summary": "删除商品类别",
         "operationId": "del_category_category__request_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "request_id",
@@ -477,7 +522,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
       }
     },
     "/admin/sys_admin/create": {
@@ -603,6 +653,692 @@
         }
       }
     },
+    "/admin/sys_admin/me": {
+      "get": {
+        "tags": [
+          "系统管理"
+        ],
+        "summary": "获取当前登录管理员",
+        "operationId": "get_current_admin_info_admin_sys_admin_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/activity/create": {
+      "post": {
+        "tags": [
+          "活动管理"
+        ],
+        "summary": "新建活动",
+        "operationId": "create_activity_activity_create_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateActivityRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/activity/edit": {
+      "put": {
+        "tags": [
+          "活动管理"
+        ],
+        "summary": "编辑活动",
+        "operationId": "edit_activity_activity_edit_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditActivityRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/activity/{activity_id}": {
+      "delete": {
+        "tags": [
+          "活动管理"
+        ],
+        "summary": "删除活动",
+        "operationId": "delete_activity_activity__activity_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "activity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Activity Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/address/list": {
+      "get": {
+        "tags": [
+          "收货地址管理"
+        ],
+        "summary": "查询地址列表",
+        "operationId": "get_address_list_address_list_get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/address/add": {
+      "post": {
+        "tags": [
+          "收货地址管理"
+        ],
+        "summary": "新增地址",
+        "operationId": "add_address_address_add_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddressCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AddressCreateResponse"
+                  },
+                  "type": "array",
+                  "title": "Response Add Address Address Add Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/address/edit": {
+      "post": {
+        "tags": [
+          "收货地址管理"
+        ],
+        "summary": "修改地址",
+        "operationId": "edit_address_address_edit_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditAddressRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddressCreateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/address/{id}": {
+      "delete": {
+        "tags": [
+          "收货地址管理"
+        ],
+        "summary": "删除地址",
+        "operationId": "delete_address_address__id__delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wx/product/hot_list": {
+      "get": {
+        "tags": [
+          "小程序商品管理"
+        ],
+        "summary": "获取热销商品列表",
+        "operationId": "get_product_hot_list_wx_product_hot_list_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/app__schemas__wx__products__ProductResponse"
+                  },
+                  "type": "array",
+                  "title": "Response Get Product Hot List Wx Product Hot List Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wx/product/activity_list": {
+      "get": {
+        "tags": [
+          "小程序商品管理"
+        ],
+        "summary": "获取活动列表",
+        "operationId": "get_product_activity_list_wx_product_activity_list_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/activityListResponse"
+                  },
+                  "type": "array",
+                  "title": "Response Get Product Activity List Wx Product Activity List Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wx/product/activity_list/{activity_id}": {
+      "get": {
+        "tags": [
+          "小程序商品管理"
+        ],
+        "summary": "获取活动对应的商品列表",
+        "operationId": "get_product_activity_product_list_wx_product_activity_list__activity_id__get",
+        "parameters": [
+          {
+            "name": "activity_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Activity Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/app__schemas__wx__products__ProductResponse"
+                  },
+                  "title": "Response Get Product Activity Product List Wx Product Activity List  Activity Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wx/product/detail/{product_id}": {
+      "get": {
+        "tags": [
+          "小程序商品管理"
+        ],
+        "summary": "获取商品详情",
+        "operationId": "get_product_detail_wx_product_detail__product_id__get",
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Product Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/app__schemas__wx__products__ProductResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cart/add": {
+      "post": {
+        "tags": [
+          "购物车"
+        ],
+        "summary": "加入购物车",
+        "operationId": "add_cart_cart_add_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddCartRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddCartResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cart/list": {
+      "get": {
+        "tags": [
+          "购物车"
+        ],
+        "summary": "获取购物车列表",
+        "operationId": "get_cart_list_cart_list_get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CartListResponse-Output"
+                  },
+                  "title": "Response Get Cart List Cart List Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cart/change": {
+      "post": {
+        "tags": [
+          "购物车"
+        ],
+        "summary": "改变购物车中商品数量",
+        "operationId": "change_cart_num_cart_change_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeCartNumRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CartListResponse-Output"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cart/{cart_id}": {
+      "delete": {
+        "tags": [
+          "购物车"
+        ],
+        "summary": "删除购物车中商品",
+        "operationId": "delete_cart_cart__cart_id__delete",
+        "parameters": [
+          {
+            "name": "cart_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Cart Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Delete Cart Cart  Cart Id  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cart/settlement": {
+      "post": {
+        "tags": [
+          "购物车"
+        ],
+        "summary": "购物车结算创建订单",
+        "operationId": "settlement_cart_cart_settlement_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettlementCartRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/": {
       "get": {
         "summary": "Read Root",
@@ -624,6 +1360,169 @@
   },
   "components": {
     "schemas": {
+      "AddCartRequest": {
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "product_id": {
+            "type": "integer",
+            "title": "Product Id"
+          },
+          "num": {
+            "type": "integer",
+            "title": "Num",
+            "default": 1
+          },
+          "price": {
+            "type": "number",
+            "title": "Price",
+            "default": 0
+          },
+          "total_price": {
+            "type": "number",
+            "title": "Total Price",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "product_id"
+        ],
+        "title": "AddCartRequest"
+      },
+      "AddCartResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "product_id": {
+            "type": "integer",
+            "title": "Product Id"
+          },
+          "num": {
+            "type": "integer",
+            "title": "Num"
+          },
+          "price": {
+            "type": "number",
+            "title": "Price",
+            "default": 0
+          },
+          "total_price": {
+            "type": "number",
+            "title": "Total Price",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "user_id",
+          "product_id",
+          "num"
+        ],
+        "title": "AddCartResponse"
+      },
+      "AddressCreateRequest": {
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "consignee": {
+            "type": "string",
+            "title": "Consignee"
+          },
+          "phone": {
+            "type": "string",
+            "title": "Phone"
+          },
+          "address": {
+            "type": "string",
+            "title": "Address"
+          },
+          "detail_addr": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail Addr"
+          },
+          "lonlat": {
+            "type": "string",
+            "title": "Lonlat"
+          },
+          "is_default": {
+            "type": "boolean",
+            "title": "Is Default",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "consignee",
+          "phone",
+          "address",
+          "lonlat"
+        ],
+        "title": "AddressCreateRequest"
+      },
+      "AddressCreateResponse": {
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "consignee": {
+            "type": "string",
+            "title": "Consignee"
+          },
+          "phone": {
+            "type": "string",
+            "title": "Phone"
+          },
+          "address": {
+            "type": "string",
+            "title": "Address"
+          },
+          "detail_addr": {
+            "type": "string",
+            "title": "Detail Addr"
+          },
+          "lonlat": {
+            "type": "string",
+            "title": "Lonlat"
+          },
+          "is_default": {
+            "type": "boolean",
+            "title": "Is Default",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "consignee",
+          "phone",
+          "address",
+          "detail_addr",
+          "lonlat"
+        ],
+        "title": "AddressCreateResponse"
+      },
       "Body_upload_common_file_upload_upload_post": {
         "properties": {
           "file": {
@@ -638,6 +1537,88 @@
           "file"
         ],
         "title": "Body_upload_common_file_upload_upload_post"
+      },
+      "CartListResponse-Input": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "product_id": {
+            "type": "integer",
+            "title": "Product Id"
+          },
+          "num": {
+            "type": "integer",
+            "title": "Num"
+          },
+          "price": {
+            "type": "number",
+            "title": "Price",
+            "default": 0
+          },
+          "total_price": {
+            "type": "number",
+            "title": "Total Price",
+            "default": 0
+          },
+          "products": {
+            "$ref": "#/components/schemas/ProductResponse-Input"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "user_id",
+          "product_id",
+          "num"
+        ],
+        "title": "CartListResponse"
+      },
+      "CartListResponse-Output": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "product_id": {
+            "type": "integer",
+            "title": "Product Id"
+          },
+          "num": {
+            "type": "integer",
+            "title": "Num"
+          },
+          "price": {
+            "type": "number",
+            "title": "Price",
+            "default": 0
+          },
+          "total_price": {
+            "type": "number",
+            "title": "Total Price",
+            "default": 0
+          },
+          "products": {
+            "$ref": "#/components/schemas/app__schemas__wx__products__ProductResponse"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "user_id",
+          "product_id",
+          "num"
+        ],
+        "title": "CartListResponse"
       },
       "CategoryListRequest": {
         "properties": {
@@ -706,6 +1687,90 @@
         ],
         "title": "CategoryResponse"
       },
+      "ChangeCartNumRequest": {
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "product_id": {
+            "type": "integer",
+            "title": "Product Id"
+          },
+          "num": {
+            "type": "integer",
+            "title": "Num",
+            "default": 1
+          },
+          "price": {
+            "type": "number",
+            "title": "Price",
+            "default": 0
+          },
+          "total_price": {
+            "type": "number",
+            "title": "Total Price",
+            "default": 0
+          },
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "product_id"
+        ],
+        "title": "ChangeCartNumRequest"
+      },
+      "CreateActivityRequest": {
+        "properties": {
+          "activity_name": {
+            "type": "string",
+            "title": "Activity Name"
+          },
+          "banner": {
+            "type": "string",
+            "title": "Banner"
+          },
+          "start_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start Time"
+          },
+          "end_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End Time"
+          },
+          "status": {
+            "type": "integer",
+            "title": "Status",
+            "default": 1
+          },
+          "product_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Product Ids"
+          },
+          "desc": {
+            "type": "string",
+            "title": "Desc",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "activity_name",
+          "banner",
+          "start_time",
+          "end_time"
+        ],
+        "title": "CreateActivityRequest"
+      },
       "CreateCategoryRequest": {
         "properties": {
           "cate_name": {
@@ -749,6 +1814,19 @@
             "exclusiveMinimum": 0,
             "title": "Price",
             "description": "售价"
+          },
+          "cost_price": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost Price",
+            "description": "进货价"
           },
           "market_price": {
             "anyOf": [
@@ -841,6 +1919,142 @@
         ],
         "title": "CreateProductRequest"
       },
+      "EditActivityRequest": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "activity_name": {
+            "type": "string",
+            "title": "Activity Name"
+          },
+          "banner": {
+            "type": "string",
+            "title": "Banner"
+          },
+          "start_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start Time"
+          },
+          "end_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End Time"
+          },
+          "status": {
+            "type": "integer",
+            "title": "Status",
+            "default": 1
+          },
+          "product_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Product Ids"
+          },
+          "desc": {
+            "type": "string",
+            "title": "Desc",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "activity_name",
+          "banner",
+          "start_time",
+          "end_time"
+        ],
+        "title": "EditActivityRequest"
+      },
+      "EditAddressRequest": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "consignee": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Consignee"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address"
+          },
+          "detail_addr": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail Addr"
+          },
+          "lonlat": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lonlat"
+          },
+          "is_default": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Default"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "user_id"
+        ],
+        "title": "EditAddressRequest"
+      },
       "EditProductRequest": {
         "properties": {
           "id": {
@@ -879,6 +2093,17 @@
               }
             ],
             "title": "Price"
+          },
+          "cost_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost Price"
           },
           "market_price": {
             "anyOf": [
@@ -1053,7 +2278,7 @@
         ],
         "title": "ProductImageResponse"
       },
-      "ProductResponse": {
+      "ProductResponse-Input": {
         "properties": {
           "id": {
             "type": "integer",
@@ -1199,6 +2424,39 @@
         "type": "object",
         "title": "SearchProductRequest"
       },
+      "SettlementCartRequest": {
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "cart_list": {
+            "items": {
+              "$ref": "#/components/schemas/CartListResponse-Input"
+            },
+            "type": "array",
+            "title": "Cart List"
+          },
+          "delivery_type": {
+            "type": "integer",
+            "title": "Delivery Type"
+          },
+          "address_id": {
+            "type": "integer",
+            "title": "Address Id"
+          },
+          "total_amount": {
+            "type": "number",
+            "title": "Total Amount",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id"
+        ],
+        "title": "SettlementCartRequest"
+      },
       "SortCategory": {
         "properties": {
           "sort": {
@@ -1241,6 +2499,8 @@
           },
           "password": {
             "type": "string",
+            "maxLength": 128,
+            "minLength": 6,
             "title": "Password"
           },
           "name": {
@@ -1268,6 +2528,8 @@
           },
           "password": {
             "type": "string",
+            "maxLength": 128,
+            "minLength": 6,
             "title": "Password"
           }
         },
@@ -1280,14 +2542,19 @@
       },
       "SysAdminLoginResponse": {
         "properties": {
-          "token": {
+          "access_token": {
             "type": "string",
-            "title": "Token"
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
           }
         },
         "type": "object",
         "required": [
-          "token"
+          "access_token"
         ],
         "title": "SysAdminLoginResponse"
       },
@@ -1303,6 +2570,8 @@
           },
           "password": {
             "type": "string",
+            "maxLength": 128,
+            "minLength": 6,
             "title": "Password"
           },
           "name": {
@@ -1387,6 +2656,260 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "activityListResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "activity_name": {
+            "type": "string",
+            "title": "Activity Name"
+          },
+          "banner": {
+            "type": "string",
+            "title": "Banner"
+          },
+          "start_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start Time"
+          },
+          "end_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End Time"
+          },
+          "status": {
+            "type": "integer",
+            "title": "Status"
+          },
+          "desc": {
+            "type": "string",
+            "title": "Desc"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "activity_name",
+          "banner",
+          "start_time",
+          "end_time",
+          "status",
+          "desc"
+        ],
+        "title": "activityListResponse"
+      },
+      "app__schemas__admin__product__ProductResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "cate_id": {
+            "type": "integer",
+            "title": "Cate Id"
+          },
+          "product_name": {
+            "type": "string",
+            "title": "Product Name"
+          },
+          "price": {
+            "type": "number",
+            "title": "Price"
+          },
+          "cost_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost Price"
+          },
+          "market_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Market Price"
+          },
+          "thumb": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Thumb"
+          },
+          "images": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ProductImageResponse"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Images",
+            "default": []
+          },
+          "stock": {
+            "type": "integer",
+            "title": "Stock"
+          },
+          "is_hot": {
+            "type": "integer",
+            "title": "Is Hot"
+          },
+          "is_special": {
+            "type": "integer",
+            "title": "Is Special"
+          },
+          "desc": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Desc"
+          },
+          "status": {
+            "type": "integer",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "cate_id",
+          "product_name",
+          "price",
+          "stock",
+          "is_hot",
+          "is_special",
+          "status"
+        ],
+        "title": "ProductResponse"
+      },
+      "app__schemas__wx__products__ProductResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "cate_id": {
+            "type": "integer",
+            "title": "Cate Id"
+          },
+          "product_name": {
+            "type": "string",
+            "title": "Product Name"
+          },
+          "price": {
+            "type": "number",
+            "title": "Price"
+          },
+          "market_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Market Price"
+          },
+          "thumb": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Thumb"
+          },
+          "images": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ProductImageResponse"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Images",
+            "default": []
+          },
+          "stock": {
+            "type": "integer",
+            "title": "Stock"
+          },
+          "is_hot": {
+            "type": "integer",
+            "title": "Is Hot"
+          },
+          "is_special": {
+            "type": "integer",
+            "title": "Is Special"
+          },
+          "desc": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Desc"
+          },
+          "status": {
+            "type": "integer",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "cate_id",
+          "product_name",
+          "price",
+          "stock",
+          "is_hot",
+          "is_special",
+          "status"
+        ],
+        "title": "ProductResponse"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
       }
     }
   }

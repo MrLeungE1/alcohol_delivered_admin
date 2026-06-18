@@ -14,7 +14,10 @@ function logout() {
 <template>
   <header class="layout-header">
     <div class="header-left">
-      <h1 class="header-logo">酒水配送管理系统</h1>
+      <div>
+        <h1 class="header-logo">酒水配送管理系统</h1>
+        <p class="header-subtitle">商品、分类、活动内容统一维护</p>
+      </div>
     </div>
     <div class="header-right">
       <span class="header-user">{{ auth.username }}</span>
@@ -28,43 +31,57 @@ function logout() {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 60px;
+  min-height: 68px;
   padding: 0 24px;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.92);
   border-bottom: 1px solid var(--border);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+  backdrop-filter: blur(10px);
 }
 
 .header-logo {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 700;
   color: var(--text-h);
   margin: 0;
+}
+
+.header-subtitle {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--muted);
 }
 
 .header-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .header-user {
   font-size: 14px;
-  color: var(--text);
+  color: var(--text-h);
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.05);
 }
 
 .header-logout {
-  padding: 6px 16px;
+  height: 38px;
+  padding: 0 16px;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 12px;
   background: #fff;
   color: var(--text);
   font-size: 14px;
   cursor: pointer;
+  transition: all 0.18s ease;
 }
 
 .header-logout:hover {
   border-color: var(--accent);
   color: var(--accent);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
 }
 </style>

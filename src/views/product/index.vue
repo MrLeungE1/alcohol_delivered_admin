@@ -1,168 +1,9 @@
-<template>
-  <div class="page">
-    <div class="page-head">
-      <div class="title">商品管理</div>
-      <div class="actions">
-        <button class="btn" type="button" @click="openCreate">新增商品</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="filters">
-        <input v-model.trim="filter.product_name" class="input" placeholder="商品名称" />
-        <select v-model="filter.cate_id" class="input">
-          <option value="">全部分类</option>
-          <option v-for="c in categories" :key="c.id" :value="String(c.id)">{{ c.cate_name }}</option>
-        </select>
-        <select v-model="filter.status" class="input">
-          <option value="">全部状态</option>
-          <option value="1">上架</option>
-          <option value="0">下架</option>
-        </select>
-        <button class="btn secondary" type="button" :disabled="loading" @click="refresh">查询</button>
-      </div>
-
-      <div v-if="loading" class="loading">加载中…</div>
-
-      <table v-else class="table">
-        <thead>
-          <tr>
-            <th style="width: 80px">ID</th>
-            <th>商品名称</th>
-            <th style="width: 160px">分类</th>
-            <th style="width: 120px">图片</th>
-            <th style="width: 120px">售价</th>
-            <th style="width: 120px">库存</th>
-            <th style="width: 120px">状态</th>
-            <th style="width: 220px">操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="row in list" :key="row.id">
-            <td>{{ row.id }}</td>
-            <td>{{ row.product_name }}</td>
-            <td>{{ cateNameMap[row.cate_id] || row.cate_id }}</td>
-            <td>{{ getImageSummary(row) }}</td>
-            <td>{{ row.price }}</td>
-            <td>{{ row.stock }}</td>
-            <td>
-              <span :class="row.status === 1 ? 'tag ok' : 'tag'">{{
-                row.status === 1 ? '上架' : '下架'
-              }}</span>
-            </td>
-            <td class="ops">
-              <button class="link" type="button" @click="openEdit(row)">编辑</button>
-              <button class="link danger" type="button" @click="onDelete(row)">删除</button>
-            </td>
-          </tr>
-          <tr v-if="list.length === 0">
-            <td colspan="8" class="empty">暂无数据</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div v-if="dialogOpen" class="app-dialog-mask" @click.self="dialogOpen = false">
-      <div class="app-dialog" style="--dialog-width: 760px">
-        <div class="app-dialog__header">{{ dialogTitle }}</div>
-        <div class="app-dialog__body app-dialog__body--form">
-          <label class="field">
-            <span class="label">分类</span>
-            <select v-model.number="form.cate_id" class="input">
-              <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.cate_name }}</option>
-            </select>
-          </label>
-          <label class="field">
-            <span class="label">商品名称</span>
-            <input v-model.trim="form.product_name" class="input" placeholder="例如：青岛啤酒 330ml" />
-          </label>
-          <div class="grid">
-            <label class="field">
-              <span class="label">售价</span>
-              <input v-model.number="form.price" class="input" type="number" step="0.01" min="0" />
-            </label>
-            <label class="field">
-              <span class="label">原价</span>
-              <input
-                v-model.number="form.market_price"
-                class="input"
-                type="number"
-                step="0.01"
-                min="0"
-              />
-            </label>
-          </div>
-          <div class="grid">
-            <label class="field">
-              <span class="label">库存</span>
-              <input v-model.number="form.stock" class="input" type="number" min="0" />
-            </label>
-            <label class="field">
-              <span class="label">状态</span>
-              <select v-model.number="form.status" class="input">
-                <option :value="1">上架</option>
-                <option :value="0">下架</option>
-              </select>
-            </label>
-          </div>
-          <div class="grid">
-            <label class="field">
-              <span class="label">热销</span>
-              <select v-model.number="form.is_hot" class="input">
-                <option :value="0">否</option>
-                <option :value="1">是</option>
-              </select>
-            </label>
-            <label class="field">
-              <span class="label">特价</span>
-              <select v-model.number="form.is_special" class="input">
-                <option :value="0">否</option>
-                <option :value="1">是</option>
-              </select>
-            </label>
-          </div>
-          <label class="field">
-            <span class="label">缩略图</span>
-            <ImageUploader v-model="thumbList" label="缩略图" :limit="1" @error="showUploadError" />
-          </label>
-          <label class="field">
-            <span class="label">轮播图</span>
-            <ImageUploader
-              v-model="form.banner_images"
-              label="轮播图"
-              :limit="6"
-              multiple
-              @error="showUploadError"
-            />
-          </label>
-          <label class="field">
-            <span class="label">详情图</span>
-            <ImageUploader
-              v-model="form.detail_images"
-              label="详情图"
-              :limit="12"
-              multiple
-              @error="showUploadError"
-            />
-          </label>
-          <label class="field">
-            <span class="label">描述</span>
-            <textarea v-model.trim="form.desc" class="textarea" placeholder="可选"></textarea>
-          </label>
-        </div>
-        <div class="app-dialog__footer">
-          <button class="btn secondary" type="button" @click="dialogOpen = false">取消</button>
-          <button class="btn" type="button" :disabled="loading" @click="submit">保存</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
 import { addProduct, deleteProduct, editProduct, searchProducts } from '@/api/product'
 import { listCategories } from '@/api/category'
 import ImageUploader from '@/components/ImageUploader.vue'
+import { resolveMediaUrl } from '@/utils/media'
 import type {
   CategoryResponse,
   CreateProductRequest,
@@ -211,6 +52,12 @@ const thumbList = computed<string[]>({
     form.thumb = value[0] ?? ''
   },
 })
+const stats = computed(() => ({
+  total: list.value.length,
+  online: list.value.filter((item) => item.status === 1).length,
+  hot: list.value.filter((item) => item.is_hot === 1).length,
+  stock: list.value.reduce((sum, item) => sum + item.stock, 0),
+}))
 
 async function loadCategories() {
   categories.value = await listCategories({})
@@ -248,6 +95,13 @@ function openCreate() {
   form.desc = ''
   if (categories.value.length > 0) form.cate_id = categories.value[0].id
   dialogOpen.value = true
+}
+
+function resetFilters() {
+  filter.product_name = ''
+  filter.cate_id = ''
+  filter.status = ''
+  refresh()
 }
 
 function pickProductImages(row: ProductResponse, imageType: number) {
@@ -373,161 +227,269 @@ onMounted(async () => {
   await refresh()
 })
 </script>
+<template>
+  <div class="admin-page">
+    <section class="page-hero">
+      <div class="page-hero__content">
+        <h2 class="page-hero__title">商品管理</h2>
+        <p class="page-hero__subtitle">
+          统一维护商品基础信息、价格、库存和图片素材，当前上传区已适配更直观的展示方式。
+        </p>
+      </div>
+      <div class="page-hero__actions">
+        <button class="app-btn app-btn--secondary" type="button" :disabled="loading" @click="refresh">
+          刷新列表
+        </button>
+        <button class="app-btn" type="button" @click="openCreate">新增商品</button>
+      </div>
+    </section>
+
+    <section class="page-stats">
+      <div class="stat-card">
+        <span class="stat-card__label">商品总数</span>
+        <div class="stat-card__value">{{ stats.total }}</div>
+        <div class="stat-card__meta">当前查询结果中的商品数量</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__label">上架商品</span>
+        <div class="stat-card__value">{{ stats.online }}</div>
+        <div class="stat-card__meta">对小程序前台可见的商品</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__label">热销商品</span>
+        <div class="stat-card__value">{{ stats.hot }}</div>
+        <div class="stat-card__meta">被标记为热销的商品数</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__label">总库存</span>
+        <div class="stat-card__value">{{ stats.stock }}</div>
+        <div class="stat-card__meta">当前查询结果累计库存</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel__header">
+        <div>
+          <h3 class="panel__title">商品列表</h3>
+          <p class="panel__desc">按名称、分类、状态筛选并维护商品信息</p>
+        </div>
+      </div>
+      <div class="panel__body">
+        <div class="filter-grid">
+          <label class="field">
+            <span class="field__label">商品名称</span>
+            <input v-model.trim="filter.product_name" class="app-input" placeholder="输入商品名称" />
+          </label>
+          <label class="field">
+            <span class="field__label">商品分类</span>
+            <select v-model="filter.cate_id" class="app-input">
+              <option value="">全部分类</option>
+              <option v-for="c in categories" :key="c.id" :value="String(c.id)">{{ c.cate_name }}</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field__label">商品状态</span>
+            <select v-model="filter.status" class="app-input">
+              <option value="">全部状态</option>
+              <option value="1">上架</option>
+              <option value="0">下架</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field__label">操作</span>
+            <div class="filter-actions">
+              <button class="app-btn app-btn--secondary" type="button" :disabled="loading" @click="resetFilters">
+                重置
+              </button>
+              <button class="app-btn" type="button" :disabled="loading" @click="refresh">查询</button>
+            </div>
+          </label>
+        </div>
+
+        <div v-if="loading" class="loading-state">加载中...</div>
+
+        <div v-else class="app-table-wrap">
+          <table class="app-table">
+            <thead>
+              <tr>
+                <th style="width: 80px">ID</th>
+                <th style="width: 280px">商品信息</th>
+                <th style="width: 140px">分类</th>
+                <th style="width: 170px">图片</th>
+                <th style="width: 120px">售价</th>
+                <th style="width: 120px">库存</th>
+                <th style="width: 120px">状态</th>
+                <th style="width: 160px">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in list" :key="row.id">
+                <td>{{ row.id }}</td>
+                <td>
+                  <div class="row-title">{{ row.product_name }}</div>
+                  <div class="row-desc">
+                    <span>{{ row.is_hot === 1 ? '热销' : '普通' }}</span>
+                    <span> / </span>
+                    <span>{{ row.is_special === 1 ? '特价' : '常规价' }}</span>
+                    <span v-if="row.desc"> / {{ row.desc }}</span>
+                  </div>
+                </td>
+                <td>{{ cateNameMap[row.cate_id] || row.cate_id }}</td>
+                <td>
+                  <div class="thumb-cell">
+                    <img
+                      v-if="row.thumb"
+                      :src="resolveMediaUrl(row.thumb)"
+                      :alt="row.product_name"
+                    />
+                    <span class="text-muted">{{ getImageSummary(row) }}</span>
+                  </div>
+                </td>
+                <td class="text-strong">￥{{ row.price }}</td>
+                <td>{{ row.stock }}</td>
+                <td>
+                  <span :class="row.status === 1 ? 'status-pill status-pill--active' : 'status-pill'">
+                    {{ row.status === 1 ? '上架' : '下架' }}
+                  </span>
+                </td>
+                <td>
+                  <div class="table-ops">
+                    <button class="app-link" type="button" @click="openEdit(row)">编辑</button>
+                    <button class="app-link app-link--danger" type="button" @click="onDelete(row)">删除</button>
+                  </div>
+                </td>
+              </tr>
+              <tr v-if="list.length === 0">
+                <td colspan="8" class="empty-state">暂无数据</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <div v-if="dialogOpen" class="app-dialog-mask" @click.self="dialogOpen = false">
+      <div class="app-dialog" style="--dialog-width: 820px">
+        <div class="app-dialog__header">{{ dialogTitle }}</div>
+        <div class="app-dialog__body app-dialog__body--form">
+          <div class="form-grid form-grid--2">
+            <label class="field">
+              <span class="field__label">分类</span>
+              <select v-model.number="form.cate_id" class="app-input">
+                <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.cate_name }}</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="field__label">商品名称</span>
+              <input v-model.trim="form.product_name" class="app-input" placeholder="例如：青岛啤酒 330ml" />
+            </label>
+            <label class="field">
+              <span class="field__label">售价</span>
+              <input v-model.number="form.price" class="app-input" type="number" step="0.01" min="0" />
+            </label>
+            <label class="field">
+              <span class="field__label">原价</span>
+              <input
+                v-model.number="form.market_price"
+                class="app-input"
+                type="number"
+                step="0.01"
+                min="0"
+              />
+            </label>
+            <label class="field">
+              <span class="field__label">库存</span>
+              <input v-model.number="form.stock" class="app-input" type="number" min="0" />
+            </label>
+            <label class="field">
+              <span class="field__label">状态</span>
+              <select v-model.number="form.status" class="app-input">
+                <option :value="1">上架</option>
+                <option :value="0">下架</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="field__label">热销</span>
+              <select v-model.number="form.is_hot" class="app-input">
+                <option :value="0">否</option>
+                <option :value="1">是</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="field__label">特价</span>
+              <select v-model.number="form.is_special" class="app-input">
+                <option :value="0">否</option>
+                <option :value="1">是</option>
+              </select>
+            </label>
+            <label class="field field--span-2">
+              <span class="field__label">
+                缩略图
+                <span class="field__hint">用于列表卡片和核心展示区域</span>
+              </span>
+              <ImageUploader v-model="thumbList" label="缩略图" :limit="1" @error="showUploadError" />
+            </label>
+            <label class="field field--span-2">
+              <span class="field__label">
+                轮播图
+                <span class="field__hint">建议上传多张，突出商品卖点</span>
+              </span>
+              <ImageUploader
+                v-model="form.banner_images"
+                label="轮播图"
+                :limit="6"
+                multiple
+                @error="showUploadError"
+              />
+            </label>
+            <label class="field field--span-2">
+              <span class="field__label">
+                详情图
+                <span class="field__hint">详情页可展示规格、包装和卖点</span>
+              </span>
+              <ImageUploader
+                v-model="form.detail_images"
+                label="详情图"
+                :limit="12"
+                multiple
+                @error="showUploadError"
+              />
+            </label>
+            <label class="field field--span-2">
+              <span class="field__label">描述</span>
+              <textarea v-model.trim="form.desc" class="app-textarea" placeholder="可选"></textarea>
+            </label>
+          </div>
+        </div>
+        <div class="app-dialog__footer">
+          <button class="app-btn app-btn--secondary" type="button" @click="dialogOpen = false">取消</button>
+          <button class="app-btn" type="button" :disabled="loading" @click="submit">保存商品</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <style scoped>
-.page {
+.filter-actions {
   display: flex;
-  flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 
-.page-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.title {
-  font-size: 18px;
-  font-weight: 600;
+.row-title {
+  font-weight: 700;
   color: var(--text-h);
 }
 
-.actions {
-  display: flex;
-  gap: 10px;
-}
-
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px;
-}
-
-.filters {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.input {
-  height: 36px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  padding: 0 12px;
-  outline: none;
-  background: #fff;
-}
-
-.textarea {
-  min-height: 90px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  padding: 8px 12px;
-  outline: none;
-  resize: vertical;
-  background: #fff;
-}
-
-.btn {
-  height: 36px;
-  border-radius: 10px;
-  border: 1px solid var(--accent);
-  background: var(--accent);
-  color: #fff;
-  padding: 0 14px;
-  cursor: pointer;
-}
-
-.btn.secondary {
-  background: #fff;
-  color: var(--text);
-  border-color: var(--border);
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.table th,
-.table td {
-  padding: 10px 8px;
-  border-bottom: 1px solid var(--border);
-  text-align: left;
-  font-size: 14px;
-}
-
-.ops {
-  display: flex;
-  gap: 10px;
-}
-
-.link {
-  border: none;
-  background: transparent;
-  color: var(--accent);
-  cursor: pointer;
-  padding: 0;
-}
-
-.link.danger {
-  color: var(--danger);
-}
-
-.tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  background: rgba(100, 116, 139, 0.14);
-  color: var(--text);
-}
-
-.tag.ok {
-  background: var(--accent-bg);
-  color: var(--accent);
-}
-
-.empty {
-  text-align: center;
+.row-desc {
+  margin-top: 6px;
   color: var(--muted);
-  padding: 20px 0;
-}
-
-.loading {
-  padding: 18px 0;
-  color: var(--muted);
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.label {
-  font-size: 13px;
-  color: var(--muted);
+  line-height: 1.5;
 }
 
 @media (max-width: 640px) {
-  .grid {
-    grid-template-columns: 1fr;
+  .filter-actions {
+    flex-direction: column;
   }
 }
 </style>

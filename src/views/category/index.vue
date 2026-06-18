@@ -20,6 +20,12 @@ const form = reactive({
 })
 
 const dialogTitle = computed(() => (editingId.value ? '编辑分类' : '新增分类'))
+const stats = computed(() => ({
+  total: list.value.length,
+  active: list.value.filter((item) => item.status === 1).length,
+  disabled: list.value.filter((item) => item.status === 0).length,
+  maxSort: list.value.length ? Math.max(...list.value.map((item) => item.sort)) : 0,
+}))
 
 async function refresh() {
   loading.value = true
@@ -48,6 +54,12 @@ function openEdit(row: CategoryResponse) {
   form.sort = row.sort
   form.status = row.status
   dialogOpen.value = true
+}
+
+function resetFilters() {
+  filter.cate_name = ''
+  filter.status = ''
+  refresh()
 }
 
 async function submit() {
@@ -110,89 +122,141 @@ onMounted(refresh)
 </script>
 
 <template>
-  <div class="page">
-    <div class="page-head">
-      <div class="title">分类管理</div>
-      <div class="actions">
-        <button class="btn" type="button" @click="openCreate">新增分类</button>
-        <button class="btn secondary" type="button" :disabled="loading" @click="saveSort">
+  <div class="admin-page">
+    <section class="page-hero">
+      <div class="page-hero__content">
+        <h2 class="page-hero__title">分类管理</h2>
+        <p class="page-hero__subtitle">
+          管理商品类目、状态和排序，排序值越小越靠前，便于小程序端更自然地组织商品结构。
+        </p>
+      </div>
+      <div class="page-hero__actions">
+        <button class="app-btn app-btn--secondary" type="button" :disabled="loading" @click="saveSort">
           保存排序
         </button>
+        <button class="app-btn" type="button" @click="openCreate">新增分类</button>
       </div>
-    </div>
+    </section>
 
-    <div class="card">
-      <div class="filters">
-        <input v-model.trim="filter.cate_name" class="input" placeholder="分类名称" />
-        <select v-model="filter.status" class="input">
-          <option value="">全部状态</option>
-          <option value="1">启用</option>
-          <option value="0">禁用</option>
-        </select>
-        <button class="btn secondary" type="button" :disabled="loading" @click="refresh">
-          查询
-        </button>
+    <section class="page-stats">
+      <div class="stat-card">
+        <span class="stat-card__label">分类总数</span>
+        <div class="stat-card__value">{{ stats.total }}</div>
+        <div class="stat-card__meta">当前查询结果中的分类数量</div>
       </div>
+      <div class="stat-card">
+        <span class="stat-card__label">启用分类</span>
+        <div class="stat-card__value">{{ stats.active }}</div>
+        <div class="stat-card__meta">在前台正常可用的分类</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__label">禁用分类</span>
+        <div class="stat-card__value">{{ stats.disabled }}</div>
+        <div class="stat-card__meta">暂不展示的分类</div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__label">最大排序值</span>
+        <div class="stat-card__value">{{ stats.maxSort }}</div>
+        <div class="stat-card__meta">可作为新增分类排序参考</div>
+      </div>
+    </section>
 
-      <div v-if="loading" class="loading">加载中…</div>
+    <section class="panel">
+      <div class="panel__header">
+        <div>
+          <h3 class="panel__title">分类列表</h3>
+          <p class="panel__desc">支持筛选、编辑与批量调整排序</p>
+        </div>
+      </div>
+      <div class="panel__body">
+        <div class="filter-grid">
+          <label class="field">
+            <span class="field__label">分类名称</span>
+            <input v-model.trim="filter.cate_name" class="app-input" placeholder="输入分类名称" />
+          </label>
+          <label class="field">
+            <span class="field__label">状态</span>
+            <select v-model="filter.status" class="app-input">
+              <option value="">全部状态</option>
+              <option value="1">启用</option>
+              <option value="0">禁用</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field__label">操作</span>
+            <div class="filter-actions">
+              <button class="app-btn app-btn--secondary" type="button" :disabled="loading" @click="resetFilters">
+                重置
+              </button>
+              <button class="app-btn" type="button" :disabled="loading" @click="refresh">查询</button>
+            </div>
+          </label>
+        </div>
 
-      <table v-else class="table">
-        <thead>
-          <tr>
-            <th style="width: 80px">ID</th>
-            <th>分类名称</th>
-            <th style="width: 160px">排序</th>
-            <th style="width: 120px">状态</th>
-            <th style="width: 200px">操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="row in list" :key="row.id">
-            <td>{{ row.id }}</td>
-            <td>{{ row.cate_name }}</td>
-            <td>
-              <input v-model.number="row.sort" class="input small" type="number" />
-            </td>
-            <td>
-              <span :class="row.status === 1 ? 'tag ok' : 'tag'">{{
-                row.status === 1 ? '启用' : '禁用'
-              }}</span>
-            </td>
-            <td class="ops">
-              <button class="link" type="button" @click="openEdit(row)">编辑</button>
-              <button class="link danger" type="button" @click="onDelete(row)">删除</button>
-            </td>
-          </tr>
-          <tr v-if="list.length === 0">
-            <td colspan="5" class="empty">暂无数据</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+        <div v-if="loading" class="loading-state">加载中...</div>
+
+        <div v-else class="app-table-wrap">
+          <table class="app-table">
+            <thead>
+              <tr>
+                <th style="width: 80px">ID</th>
+                <th>分类名称</th>
+                <th style="width: 180px">排序</th>
+                <th style="width: 120px">状态</th>
+                <th style="width: 160px">操作</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in list" :key="row.id">
+                <td>{{ row.id }}</td>
+                <td class="text-strong">{{ row.cate_name }}</td>
+                <td>
+                  <input v-model.number="row.sort" class="app-input sort-input" type="number" />
+                </td>
+                <td>
+                  <span :class="row.status === 1 ? 'status-pill status-pill--active' : 'status-pill'">
+                    {{ row.status === 1 ? '启用' : '禁用' }}
+                  </span>
+                </td>
+                <td>
+                  <div class="table-ops">
+                    <button class="app-link" type="button" @click="openEdit(row)">编辑</button>
+                    <button class="app-link app-link--danger" type="button" @click="onDelete(row)">删除</button>
+                  </div>
+                </td>
+              </tr>
+              <tr v-if="list.length === 0">
+                <td colspan="5" class="empty-state">暂无数据</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
 
     <div v-if="dialogOpen" class="app-dialog-mask" @click.self="dialogOpen = false">
       <div class="app-dialog" style="--dialog-width: 520px">
         <div class="app-dialog__header">{{ dialogTitle }}</div>
         <div class="app-dialog__body app-dialog__body--form">
           <label class="field">
-            <span class="label">分类名称</span>
-            <input v-model.trim="form.cate_name" class="input" placeholder="例如：啤酒" />
+            <span class="field__label">分类名称</span>
+            <input v-model.trim="form.cate_name" class="app-input" placeholder="例如：啤酒" />
           </label>
           <label class="field">
-            <span class="label">排序</span>
-            <input v-model.number="form.sort" class="input" type="number" />
+            <span class="field__label">排序</span>
+            <input v-model.number="form.sort" class="app-input" type="number" />
           </label>
           <label class="field">
-            <span class="label">状态</span>
-            <select v-model.number="form.status" class="input">
+            <span class="field__label">状态</span>
+            <select v-model.number="form.status" class="app-input">
               <option :value="1">启用</option>
               <option :value="0">禁用</option>
             </select>
           </label>
         </div>
         <div class="app-dialog__footer">
-          <button class="btn secondary" type="button" @click="dialogOpen = false">取消</button>
-          <button class="btn" type="button" :disabled="loading" @click="submit">保存</button>
+          <button class="app-btn app-btn--secondary" type="button" @click="dialogOpen = false">取消</button>
+          <button class="app-btn" type="button" :disabled="loading" @click="submit">保存分类</button>
         </div>
       </div>
     </div>
@@ -200,144 +264,18 @@ onMounted(refresh)
 </template>
 
 <style scoped>
-.page {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.page-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.title {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text-h);
-}
-
-.actions {
+.filter-actions {
   display: flex;
   gap: 10px;
 }
 
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px;
-}
-
-.filters {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.input {
-  height: 36px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  padding: 0 12px;
-  outline: none;
-  background: #fff;
-}
-
-.input.small {
-  height: 32px;
+.sort-input {
   width: 120px;
 }
 
-.btn {
-  height: 36px;
-  border-radius: 10px;
-  border: 1px solid var(--accent);
-  background: var(--accent);
-  color: #fff;
-  padding: 0 14px;
-  cursor: pointer;
+@media (max-width: 640px) {
+  .filter-actions {
+    flex-direction: column;
+  }
 }
-
-.btn.secondary {
-  background: #fff;
-  color: var(--text);
-  border-color: var(--border);
-}
-
-.btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.table th,
-.table td {
-  padding: 10px 8px;
-  border-bottom: 1px solid var(--border);
-  text-align: left;
-  font-size: 14px;
-}
-
-.ops {
-  display: flex;
-  gap: 10px;
-}
-
-.link {
-  border: none;
-  background: transparent;
-  color: var(--accent);
-  cursor: pointer;
-  padding: 0;
-}
-
-.link.danger {
-  color: var(--danger);
-}
-
-.tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  background: rgba(100, 116, 139, 0.14);
-  color: var(--text);
-}
-
-.tag.ok {
-  background: var(--accent-bg);
-  color: var(--accent);
-}
-
-.empty {
-  text-align: center;
-  color: var(--muted);
-  padding: 20px 0;
-}
-
-.loading {
-  padding: 18px 0;
-  color: var(--muted);
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.label {
-  font-size: 13px;
-  color: var(--muted);
-}
-
 </style>

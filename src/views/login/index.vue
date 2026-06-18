@@ -20,7 +20,7 @@
           {{ loading ? '登录中...' : '登录' }}
         </button>
       </form>
-      <div class="tip">接口：POST /admin/sys_admin/login，成功返回 token。</div>
+      <div class="tip">接口：POST /admin/sys_admin/login，成功返回 `access_token`。</div>
     </div>
   </div>
 </template>
@@ -53,7 +53,7 @@ async function submit() {
   loading.value = true
   try {
     const res = await login({ username: form.username.trim(), password: form.password })
-    auth.setAuth(res.token, form.username.trim())
+    auth.setAuth(res.access_token, form.username.trim())
     const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/'
     router.replace(redirect)
   } catch (e: any) {

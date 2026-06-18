@@ -2,6 +2,7 @@ export interface CreateProductRequest {
   cate_id: number
   product_name: string
   price: number
+  cost_price?: number | null
   market_price?: number | null
   thumb?: string | null
   images?: ProductImageItem[] | null
@@ -17,6 +18,7 @@ export interface EditProductRequest {
   cate_id?: number | null
   product_name?: string | null
   price?: number | null
+  cost_price?: number | null
   market_price?: number | null
   thumb?: string | null
   images?: ProductImageItem[] | null
@@ -39,6 +41,7 @@ export interface ProductResponse {
   cate_id: number
   product_name: string
   price: number
+  cost_price?: number | null
   market_price?: number | null
   thumb?: string | null
   images?: ProductImageResponse[] | null
@@ -89,6 +92,43 @@ export interface CategoryResponse {
   status: number
 }
 
+export interface CreateActivityRequest {
+  activity_name: string
+  banner: string
+  start_time: string
+  end_time: string
+  status?: number
+  product_ids?: number[]
+  desc?: string
+}
+
+export interface EditActivityRequest {
+  id: number
+  activity_name: string
+  banner: string
+  start_time: string
+  end_time: string
+  status?: number
+  product_ids?: number[]
+  desc?: string
+}
+
+export interface ActivityListRequest {
+  activity_name?: string | null
+  status?: number | null
+}
+
+export interface ActivityResponse {
+  id: number
+  activity_name: string
+  banner: string
+  start_time: string
+  end_time: string
+  status: number
+  product_ids?: number[] | null
+  desc?: string
+}
+
 export interface SortCategory {
   sort: number
   id: number
@@ -119,5 +159,8 @@ export interface SysAdminLogin {
 }
 
 export interface SysAdminLoginResponse {
-  token: string
+  access_token: string
+  token_type?: string
 }
+
+export type SysAdminMeResponse = Record<string, unknown>
